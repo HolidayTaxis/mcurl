@@ -2,6 +2,8 @@
 
 namespace MCurl;
 
+use HTX\Lib\Logging\DebugLogger;
+
 class Result {
 
     /**
@@ -102,11 +104,20 @@ class Result {
             $headersRaw = stream_get_contents($this->query['opts'][CURLOPT_WRITEHEADER]);
             $headers = explode("\n", rtrim($headersRaw));
             $this->rawHeaders['result'] = trim(array_shift($headers));
+            $debugHeaders = false;
 
             foreach ($headers AS $header) {
-                list($name, $value) = array_map('trim', explode(':', $header, 2));
-                $name = strtolower($name);
-                $this->rawHeaders[$name] = $value;
+                if(is_null($header) || !strstr($header, ':')) {
+                    $debugHeaders = true;
+                } else {
+                    list($name, $value) = array_map('trim', explode(':', $header, 2));
+                    $name = strtolower($name);
+                    $this->rawHeaders[$name] = $value;
+                }
+            }
+
+            if($debugHeaders) {
+                DebugLogger::info("Broken header detected. raw headers sent were: " . $headersRaw);
             }
         }
         return $this->rawHeaders;
