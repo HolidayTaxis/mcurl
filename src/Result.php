@@ -117,7 +117,7 @@ class Result {
             }
 
             if($debugHeaders) {
-				DebugLogger::info("Broken header detected. raw headers sent were: " . $headersRaw);
+                DebugLogger::info("Broken header detected. raw headers sent were: " . $headersRaw);
             }
         }
         return $this->rawHeaders;
